@@ -1,2 +1,5 @@
 : 1
 location: libgpuopen-devdriverapi-headers/
+
+:
+location: libgpuopen-devdriverapi/

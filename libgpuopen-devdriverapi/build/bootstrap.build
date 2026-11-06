@@ -1,0 +1,7 @@
+project = libgpuopen-devdriverapi
+
+using version
+using config
+using test
+using install
+using dist
