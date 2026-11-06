@@ -1,0 +1,3 @@
+import libs = libgpuopen-devdriverapi-headers%lib{gpuopen-devdriverapi-headers}
+
+exe{driver}: {hxx cxx}{**} $libs testscript{**}
