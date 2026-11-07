@@ -11,7 +11,7 @@ if $windows
 
 dd = DevDriverComponents
 
-lib{DevDriverAPI}: {hxx ixx}{**}                                        \
+lib{DevDriverAPI}: {hxx ixx}{** -tdh-libs}                               \
                    cxx{** -DevDriverAPI/ADLGetDriverVersion          \
                           -$dd/listener/transports/winPipeTransport \
                           -$dd/src/protocols/etw*                   \
@@ -24,6 +24,8 @@ lib{DevDriverAPI}: cxx{DevDriverAPI/ADLGetDriverVersion          \
                        $dd/listener/transports/winPipeTransport \
                        $dd/src/protocols/etw*                   \
                        $dd/src/win/*}: include = $windows
+
+lib{DevDriverAPI}: hxx{tdh-libs}: include = $windows
 
 lib{DevDriverAPI}: cxx{$dd/src/posix/*}: include = (!$windows)
 
@@ -52,9 +54,20 @@ cxx.poptions += -DGPUOPEN_CLIENT_INTERFACE_MAJOR_VERSION=35
 objs{*}: cxx.poptions += -DBUILD_DLL
 
 if $windows
-  cxx.libs += advapi32.lib ole32.lib tdh.lib ws2_32.lib
+  cxx.libs += advapi32.lib ole32.lib ws2_32.lib
 else
   cxx.libs += -pthread
+
+# Pull in tdh.lib with #pragma comment so it does not go through the
+# installed .pc (https://github.com/build2/build2/issues/557).
+#
+if ($cxx.target.system == 'win32-msvc')
+{
+  if ($cxx.class == 'gcc')
+    cxx.poptions += -include "$src_pfx/tdh-libs.h"
+  else
+    cxx.poptions += "/FI$src_pfx/tdh-libs.h"
+}
 
 # Export options.
 #
