@@ -1,0 +1,9 @@
+: 1
+name: libgpuopen-devdriverapi-headers
+version: 1.7.0
+upstream-version: 1.7
+type: lib,binless
+language: c++
+project: gpuopen
+summary: AMD Developer Driver API (DevDriverAPI) C++ header
+license: MIT; MIT License.
