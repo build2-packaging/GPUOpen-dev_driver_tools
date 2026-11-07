@@ -9,6 +9,12 @@ windows = ($cxx.target.class == 'windows')
 if $windows
   import impl_libs += libgpuopen-adl%lib{gpuopen-adl}
 
+# The resource compiler for the Windows version resource (cxx only loads
+# it for MinGW).
+#
+if ($cxx.target.class == 'windows')
+  using bin.rc
+
 dd = DevDriverComponents
 
 lib{DevDriverAPI}: {hxx ixx}{** -tdh-libs}                               \
@@ -30,6 +36,42 @@ lib{DevDriverAPI}: hxx{tdh-libs}: include = $windows
 lib{DevDriverAPI}: cxx{$dd/src/posix/*}: include = (!$windows)
 
 lib{DevDriverAPI}: $impl_libs $intf_libs
+
+# Embed the upstream VERSIONINFO resource in the Windows DLL. build2 does
+# not link .res files, so cvtres converts the rc.exe output to an object.
+#
+if $windows
+{
+  cvtres = [path] $directory($effect($bin.ld.path))/cvtres.exe
+
+  switch $cxx.target.cpu
+  {
+    case 'x86_64'
+      cvtres_machine = X64
+    case 'aarch64'
+      cvtres_machine = ARM64
+    default
+      cvtres_machine = X86
+  }
+}
+
+define rc: file
+rc{*}: extension = rc
+
+objs{DevDriverAPI-rc.obj}: rc{DevDriverAPI/Windows/DevDriverAPI} \
+                         hxx{DevDriverAPI/Windows/resource}    \
+                         hxx{Common/Version}
+{{
+  diag rc ($<[0])
+  res = $~/DevDriverAPI.res
+  $bin.rc.path -NOLOGO $regex.apply($cxx.sys_hdr_dirs, '(.+)', '/I\1') \
+    "/I$src_pfx" -fo $res $path($<[0]) &$res
+  $cvtres -NOLOGO -MACHINE:$cvtres_machine "/OUT:$path($>[0])" $res
+}}
+
+libs{DevDriverAPI}: objs{DevDriverAPI-rc}: include = $windows
+
+lib{DevDriverAPI}: rc{DevDriverAPI/Windows/DevDriverAPI}: include = adhoc
 
 # Build options.
 #

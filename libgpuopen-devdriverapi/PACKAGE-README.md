@@ -43,8 +43,7 @@ release (`1.7.0` is `V1.7`).
 As in upstream, the shared library of a release is named
 `DevDriverAPI-x64.dll` on 64-bit Windows, `libDevDriverAPI32.so` on 32-bit
 Linux, and `libDevDriverAPI.so` on 64-bit Linux, the names under which
-applications load it at runtime. Unlike in upstream,
-the Windows DLL does not embed a version information resource.
+applications load it at runtime.
 
 Only Linux and Windows are supported, as in upstream, and on Windows only
 MSVC and Clang (not MinGW GCC). The RapidJSON and MetroHash libraries that upstream bundles are provided by
