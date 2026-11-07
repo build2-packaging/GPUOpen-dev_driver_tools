@@ -1,6 +1,6 @@
 : 1
 name: libgpuopen-devdriverapi
-version: 1.7.0-a.0.z
+version: 1.7.0
 upstream-version: 1.7
 language: c++
 project: gpuopen
